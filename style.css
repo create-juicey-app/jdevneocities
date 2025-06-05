@@ -1,15 +1,38 @@
 body {
   font-family: 'Courier New', Courier, monospace;
-  background-color: #000000;
+  background-color: #000000; /* Fallback background */
   color: #00FF00;
   margin: 0;
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Align items to the start for console visibility */
+  justify-content: center; /* Center button initially */
   min-height: 100vh;
-  overflow: hidden;
+  overflow: hidden; /* Prevent scrollbars from Three.js canvas */
+  position: relative; /* Needed for z-indexing context */
+}
+
+#bootButton {
+  font-family: 'Pixellari', 'Courier New', Courier, monospace;
+  background-color: #00FF00;
+  color: #000000;
+  border: 2px solid #00AA00;
+  padding: 15px 30px;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 0 10px #00FF00;
+  z-index: 10; /* Ensure it's above other elements initially */
+}
+
+#bootButton:hover {
+  background-color: #FFFF00;
+  color: #000000;
+  border-color: #AAAA00;
+  transform: scale(1.05);
 }
 
 .container {
@@ -19,22 +42,22 @@ body {
   max-width: 700px;
   text-align: center;
   box-shadow: 0 0 10px #00FF00;
-  background-color: rgba(0, 15, 0, 0.75);
+  background-color: rgba(0, 10, 0, 0.85); /* Ensure background for readability */
   border-radius: 0;
   opacity: 0;
-  transition: opacity 1s ease-in-out, border-radius 1.5s ease-in-out, margin 1.5s ease-in-out;
-  display: flex;
+  display: none; /* Initially hidden */
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: relative;
-  margin-top: 20px; /* Add some margin to not overlap with console initially */
+  position: relative; /* Keep relative for stacking within body */
+  z-index: 1; /* Above the #three-container */
+  /* margin-top will be handled by body's justify-content or script if needed */
 }
 
 .container.with-border {
   opacity: 1;
   border-radius: 10px;
-  margin-top: 40px; /* Original margin when visible */
+  /* margin-top: 40px; */ /* Re-evaluate if needed, body centering might be enough */
 }
 
 .title {
@@ -71,23 +94,38 @@ body {
   font-family: 'Csl', 'Courier New', Courier, monospace;
   white-space: pre-wrap;
   word-break: break-all;
-  width: 90%;
-  max-width: 800px;
-  height: 180px;
+  width: 50vw; /* Grow to 50% of viewport width */
+  /* max-width: 750px; */ /* Can be removed or adjusted if 50vw is too large/small on some screens */
+  max-height: 80vh; /* Maximum height it can grow to: 80% of viewport height */
+  height: 0; /* Initial height for animation */
   overflow-y: auto;
   border: 1px dashed #008000;
   padding: 10px;
-  margin-bottom: 20px; /* Space between console and container */
-  background-color: #030303;
+  background-color: rgba(3, 3, 3, 0.95);
   color: #00BB00;
-  opacity: 1; /* Start visible */
-  transition: opacity 0.5s ease-out;
+  opacity: 0; /* Initial opacity for animation */
   font-size: 0.85em;
   box-sizing: border-box;
+  position: fixed; /* Centering */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scaleY(0); /* Initial scale for vertical growth */
+  transform-origin: center center; /* Grow from the center */
+  transition: transform 0.7s linear, opacity 0.5s linear 0.2s, width 0.7s linear; /* Added width transition */
+  z-index: 5; /* Above 3D background, below potential popups */
+  display: none; /* Initially hidden, script will manage */
+}
+
+#console.active {
+  display: block; /* Make it visible for animation */
+  opacity: 1;
+  transform: translate(-50%, -50%) scaleY(1); /* Grow to full height */
+  /* height will be implicitly set by scaleY and max-height */
+  /* width is set directly above, transition will handle its growth if initial width was different or 0 */
 }
 
 .overlay {
-  z-index: -5;
+  z-index: -5; /* Will be behind #three-container if #three-container is -1 */
   position: fixed;
   top: 0;
   left: 0;
@@ -101,10 +139,14 @@ body {
 }
 
 #three-container {
-  margin-top: 15px;
-  width: 150px;
-  height: 150px;
-  border: 1px dotted #009900;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* Behind all other content */
+  /* border: 1px dotted #009900; */ /* Remove border or make it subtle if desired */
+  overflow: hidden; /* Ensure canvas doesn't cause scrollbars */
 }
 
 /* Styles for Not Found page */
@@ -115,15 +157,11 @@ body {
   max-width: 600px;
   text-align: center;
   box-shadow: 0 0 10px #FF0000;
-  background-color: rgba(20, 0, 0, 0.75); /* Dark red tint */
+  background-color: rgba(20, 0, 0, 0.85); /* Dark red tint, ensure background */
   border-radius: 0px; /* Sharp corners initially */
   opacity: 0; /* Start hidden */
   transition: opacity 1s ease-in-out, border-radius 1.5s ease-in-out, margin 1.5s ease-in-out;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 40px; /* Consistent margin */
+  display: none; /* Initially hidden if it's on the same page structure, or handled by its own JS */
 }
 
 .not-found-container.with-border {

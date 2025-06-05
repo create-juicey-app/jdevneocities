@@ -1,90 +1,119 @@
 window.addEventListener('load', function() {
+  const bootButton = document.getElementById('bootButton');
   const container = document.querySelector('.container');
   const title = document.getElementById('title');
   const content = document.querySelector('.content');
-  const consoleElement = document.getElementById('console'); // Renamed to avoid conflict
+  const consoleElement = document.getElementById('console');
   const targetText = 'Welcome to JoS';
   let currentText = '';
+
+  // Initially hide console and main container
+  if (consoleElement) {
+    consoleElement.style.display = 'none'; // Ensure it's hidden before animation class
+  }
+  if (container) {
+    container.style.display = 'none';
+  }
+  if (document.body) {
+      document.body.style.justifyContent = 'center'; // Center boot button
+  }
+
 
   function updateText() {
     if (currentText.length < targetText.length) {
       currentText += targetText[currentText.length];
       title.textContent = currentText;
-      playBipSound();
-      setTimeout(updateText, 70); // Slightly slower typing for title
+      playBipSound(); // Bip sound for title typing
+      setTimeout(updateText, 70);
     } else {
+      // Title animation complete
       setTimeout(function() {
-        title.classList.add('visible'); // Assuming a 'visible' class for title if needed
-        setTimeout(function() {
-          content.classList.add('visible');
-        }, 500); // Content appears sooner
-      }, 500); // Title visible sooner
+        // title.classList.add('visible'); // This class might not be used/needed if opacity is 1
+        if (content) content.classList.add('visible');
+      }, 500);
     }
   }
 
-  function typeString(stringArray) {
-    let stringIndex = 0;
-    let charIndex = 0;
-    const typeInterval = setInterval(() => {
-      if (stringIndex < stringArray.length) {
-        const currentString = stringArray[stringIndex];
-        if (charIndex < currentString.length) {
-          consoleElement.textContent += currentString[charIndex];
-          playBipSound();
-          charIndex++;
+  function displayBootLogLineByLine(stringArray) {
+    let lineIndex = 0;
+    const lineDelay = 30; // Milliseconds between each line
+
+    function displayNextLine() {
+      if (lineIndex < stringArray.length) {
+        if (consoleElement) {
+          consoleElement.textContent += stringArray[lineIndex] + '\n';
           consoleElement.scrollTop = consoleElement.scrollHeight; // Auto-scroll
-        } else {
-          consoleElement.textContent += '\n';
-          stringIndex++;
-          charIndex = 0;
         }
+        lineIndex++;
+        setTimeout(displayNextLine, lineDelay);
       } else {
-        clearInterval(typeInterval);
-        setTimeout(function() {
-          if (consoleElement) {
-            consoleElement.style.opacity = '0'; // Fade out console
-            setTimeout(() => {
-                if (consoleElement) consoleElement.remove(); // Remove after fade
-            }, 500);
-          }
-        }, 500);
+        // Boot log display finished
+        setTimeout(showMainContent, 500); // Wait a bit then show main content
       }
-    }, 10); // Faster console typing
+    }
+    displayNextLine();
+  }
+
+  function showMainContent() {
+    if (document.body) {
+        document.body.style.justifyContent = 'flex-start'; // Align content to top
+    }
+    if (container) {
+      container.style.display = 'flex'; // Or 'block' or its original display type
+      // Timeout to allow display property to apply before transition starts
+      setTimeout(() => {
+        container.classList.add('with-border'); // This class should trigger opacity transition
+        updateText(); // Start title animation
+      }, 50);
+    }
+    // Console remains visible as a boot log
   }
 
   function playBipSound() {
     const sound = new Audio('https://files.catbox.moe/0k52m3.wav');
-    sound.volume = 0.1; // Increased volume for audible bips
-    sound.play().catch(error => {}); // Catch potential play errors
+    sound.volume = 0.05; // Reduced volume for title bips
+    sound.play().catch(error => {});
   }
 
-  fetch('string.txt')
-    .then(response => response.text())
-    .then(data => {
-      const stringArray = data.split('\n');
-      if (consoleElement) { // Check if console exists
-        typeString(stringArray);
+  if (bootButton) {
+    bootButton.addEventListener('click', function() {
+      bootButton.style.display = 'none'; // Hide button
+
+      if (consoleElement) {
+        consoleElement.style.display = 'block'; // Make it part of layout for animation
+        // Force a reflow before adding the class to ensure transition plays
+        void consoleElement.offsetWidth; 
+        consoleElement.classList.add('active');
+
+        // Wait for console animation to roughly finish before fetching and displaying log
+        // This timeout should ideally match or be slightly longer than the console's scaleY transition duration
+        setTimeout(() => {
+          fetch('string.txt')
+            .then(response => response.text())
+            .then(data => {
+              const stringArray = data.split('\n');
+              displayBootLogLineByLine(stringArray);
+            })
+            .catch(error => {
+              if (consoleElement) consoleElement.textContent = 'Error loading boot sequence: ' + error;
+              else console.error('Error loading boot sequence:', error);
+              // Still proceed to show main content even if boot log fails
+              setTimeout(showMainContent, 500);
+            });
+        }, 700); // Corresponds to transform 0.7s in CSS for #console.active
+      } else {
+        // If no console, proceed to show main content directly
+        showMainContent();
       }
-    })
-    .catch(error => {
-        if(consoleElement) consoleElement.textContent = 'Error loading boot sequence: ' + error;
-        else console.error('Error loading boot sequence:', error);
     });
+  }
 
-  setTimeout(function() {
-    container.classList.add('with-border');
-    updateText();
-    // consoleElement.style.opacity = 0; // Removed: console is handled by typeString
-  }, 7000);
+  // Removed old setTimeout for container.classList.add('with-border') and updateText()
+  // Removed old direct fetch and typeString call on load
 
-  container.addEventListener('click', function(event) {
-    event.preventDefault(); // Keep this to prevent unexpected behavior
-  });
-
-  // Removed redundant transitionend listener for console opacity
-  // container.addEventListener('transitionend', function(event) {
-  //   if (event.propertyName === 'border-radius' || event.propertyName === 'margin') {
-  //     // console.style.opacity = 0; // Console is already removed or faded out
-  //   }
-  // });
+  if (container) { // This event listener might still be useful if container has other transitions
+    container.addEventListener('click', function(event) {
+      event.preventDefault(); 
+    });
+  }
 });
