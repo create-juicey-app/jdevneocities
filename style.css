@@ -1,0 +1,177 @@
+body {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #000000;
+  color: #00FF00;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Align items to the start for console visibility */
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.container {
+  border: 2px solid #00FF00;
+  padding: 20px;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  box-shadow: 0 0 10px #00FF00;
+  background-color: rgba(0, 15, 0, 0.75);
+  border-radius: 0;
+  opacity: 0;
+  transition: opacity 1s ease-in-out, border-radius 1.5s ease-in-out, margin 1.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-top: 20px; /* Add some margin to not overlap with console initially */
+}
+
+.container.with-border {
+  opacity: 1;
+  border-radius: 10px;
+  margin-top: 40px; /* Original margin when visible */
+}
+
+.title {
+  font-family: 'Pixellari', 'Courier New', Courier, monospace;
+  font-size: 2.2em;
+  margin-bottom: 15px;
+  text-shadow: 0 0 5px #00FF00;
+  color: #00FF00; /* Ensure title color matches theme */
+}
+
+.content {
+  opacity: 0;
+  transition: opacity 1s ease-in-out 0.5s;
+  font-size: 1em;
+  line-height: 1.5;
+}
+
+.content.visible {
+  opacity: 1;
+}
+
+.content h2 {
+  font-family: 'Superhelio', 'Arial', sans-serif;
+  color: #FFFF00;
+  margin-top: 0;
+  font-size: 1.5em;
+}
+
+.content div, .content p {
+    color: #CCFFCC; /* Lighter green for content text */
+}
+
+#console {
+  font-family: 'Csl', 'Courier New', Courier, monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  width: 90%;
+  max-width: 800px;
+  height: 180px;
+  overflow-y: auto;
+  border: 1px dashed #008000;
+  padding: 10px;
+  margin-bottom: 20px; /* Space between console and container */
+  background-color: #030303;
+  color: #00BB00;
+  opacity: 1; /* Start visible */
+  transition: opacity 0.5s ease-out;
+  font-size: 0.85em;
+  box-sizing: border-box;
+}
+
+.overlay {
+  z-index: -5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('overlay.png');
+  background-size: 75px 75px; /* Repeating pattern */
+  background-repeat: repeat;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+#three-container {
+  margin-top: 15px;
+  width: 150px;
+  height: 150px;
+  border: 1px dotted #009900;
+}
+
+/* Styles for Not Found page */
+.not-found-container {
+  border: 2px solid #FF0000; /* Red border for error */
+  padding: 20px;
+  width: 70%;
+  max-width: 600px;
+  text-align: center;
+  box-shadow: 0 0 10px #FF0000;
+  background-color: rgba(20, 0, 0, 0.75); /* Dark red tint */
+  border-radius: 0px; /* Sharp corners initially */
+  opacity: 0; /* Start hidden */
+  transition: opacity 1s ease-in-out, border-radius 1.5s ease-in-out, margin 1.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 40px; /* Consistent margin */
+}
+
+.not-found-container.with-border {
+    opacity: 1;
+    border-radius: 10px; /* Slight rounding after animation */
+}
+
+
+.not-found-container h1 {
+  font-family: 'Pixellari', 'Courier New', Courier, monospace;
+  color: #FF6666; /* Lighter Red for error text */
+  text-shadow: 0 0 5px #FF0000;
+  font-size: 2em;
+}
+
+.not-found-container p {
+    color: #FFCCCC; /* Light pink for paragraph */
+}
+
+.go-back-button {
+  font-family: 'Pixellari', 'Courier New', Courier, monospace;
+  background-color: #00FF00;
+  color: #000000;
+  border: 1px solid #000000;
+  padding: 8px 15px;
+  text-decoration: none;
+  font-size: 0.9em;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 3px;
+}
+
+.go-back-button:hover {
+  background-color: #FFFF00;
+  color: #000000;
+}
+
+.go-back-button .material-symbols-outlined {
+  margin-right: 5px;
+  font-size: 1.2em; /* Adjust icon size */
+  vertical-align: middle;
+}
+
+.go-back-button .middle {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal; /* Reset line height for button text */
+}
