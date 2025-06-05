@@ -103,25 +103,25 @@ body {
   padding: 10px;
   background-color: rgba(3, 3, 3, 0.95);
   color: #00BB00;
-  opacity: 0; /* Initial opacity for animation */
   font-size: 0.85em;
   box-sizing: border-box;
   position: fixed; /* Centering */
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scaleY(0); /* Initial scale for vertical growth */
+  transform: translate(-50%, -50%) scaleY(0) scaleX(1); /* Initial scale for vertical growth, preserve horizontal */
   transform-origin: center center; /* Grow from the center */
-  transition: transform 1s linear, opacity 0.5s linear 0.2s, width 1s linear; /* Changed to 1s linear */
+  transition: transform 1s linear; /* Single transition for transform */
   z-index: 5; /* Above 3D background, below potential popups */
   display: none; /* Initially hidden, script will manage */
 }
 
 #console.active {
   display: block; /* Make it visible for animation */
-  opacity: 1;
-  transform: translate(-50%, -50%) scaleY(1); /* Grow to full height */
-  /* height will be implicitly set by scaleY and max-height */
-  /* width is set directly above, transition will handle its growth if initial width was different or 0 */
+  transform: translate(-50%, -50%) scaleY(1) scaleX(1); /* Grow to full size */
+}
+
+#console.shrinking {
+  transform: translate(-50%, -50%) scaleY(1) scaleX(0); /* Shrink horizontally */
 }
 
 .overlay {

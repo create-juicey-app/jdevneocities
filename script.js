@@ -47,8 +47,16 @@ window.addEventListener('load', function() {
         lineIndex++;
         setTimeout(displayNextLine, lineDelay);
       } else {
-        // Boot log display finished
-        setTimeout(showMainContent, 500); // Wait a bit then show main content
+        // Boot log display finished, wait 1 second then shrink console
+        setTimeout(() => {
+          if (consoleElement) {
+            consoleElement.classList.add('shrinking');
+            // Wait for shrinking animation to complete before showing main content
+            setTimeout(showMainContent, 1000);
+          } else {
+            showMainContent();
+          }
+        }, 1000);
       }
     }
     displayNextLine();
@@ -66,7 +74,10 @@ window.addEventListener('load', function() {
         updateText(); // Start title animation
       }, 50);
     }
-    // Console remains visible as a boot log
+    // Hide console after main content is shown
+    if (consoleElement) {
+      consoleElement.style.display = 'none';
+    }
   }
 
   function playBipSound() {
@@ -79,31 +90,34 @@ window.addEventListener('load', function() {
     bootButton.addEventListener('click', function() {
       bootButton.style.display = 'none'; // Hide button
 
-      if (consoleElement) {
-        consoleElement.style.display = 'block'; // Make it part of layout for animation
-        // Force a reflow before adding the class to ensure transition plays
-        void consoleElement.offsetWidth; 
-        consoleElement.classList.add('active');
+      // Add 2 second delay before console appears
+      setTimeout(() => {
+        if (consoleElement) {
+          consoleElement.style.display = 'block'; // Make it part of layout for animation
+          // Force a reflow before adding the class to ensure transition plays
+          void consoleElement.offsetWidth; 
+          consoleElement.classList.add('active');
 
-        // Wait for console animation to finish (1s) + 2 additional seconds before fetching and displaying log
-        setTimeout(() => {
-          fetch('string.txt')
-            .then(response => response.text())
-            .then(data => {
-              const stringArray = data.split('\n');
-              displayBootLogLineByLine(stringArray);
-            })
-            .catch(error => {
-              if (consoleElement) consoleElement.textContent = 'Error loading boot sequence: ' + error;
-              else console.error('Error loading boot sequence:', error);
-              // Still proceed to show main content even if boot log fails
-              setTimeout(showMainContent, 500);
-            });
-        }, 3000); // 1000ms (console animation) + 2000ms (additional delay) = 3000ms total
-      } else {
-        // If no console, proceed to show main content directly
-        showMainContent();
-      }
+          // Wait for console animation to finish (1s) + 2 additional seconds before fetching and displaying log
+          setTimeout(() => {
+            fetch('string.txt')
+              .then(response => response.text())
+              .then(data => {
+                const stringArray = data.split('\n');
+                displayBootLogLineByLine(stringArray);
+              })
+              .catch(error => {
+                if (consoleElement) consoleElement.textContent = 'Error loading boot sequence: ' + error;
+                else console.error('Error loading boot sequence:', error);
+                // Still proceed to show main content even if boot log fails
+                setTimeout(showMainContent, 500);
+              });
+          }, 3000); // 1000ms (console animation) + 2000ms (additional delay) = 3000ms total
+        } else {
+          // If no console, proceed to show main content directly
+          showMainContent();
+        }
+      }, 2000); // 2 second delay before console appears
     });
   }
 
