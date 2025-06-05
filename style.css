@@ -96,8 +96,8 @@ body {
   word-break: break-all;
   width: 50vw; /* Grow to 50% of viewport width */
   /* max-width: 750px; */ /* Can be removed or adjusted if 50vw is too large/small on some screens */
+  height: 80vh; /* Set explicit height to 80% of viewport height */
   max-height: 80vh; /* Maximum height it can grow to: 80% of viewport height */
-  height: 0; /* Initial height for animation */
   overflow-y: auto;
   border: 1px dashed #008000;
   padding: 10px;
@@ -111,7 +111,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%) scaleY(0); /* Initial scale for vertical growth */
   transform-origin: center center; /* Grow from the center */
-  transition: transform 0.7s linear, opacity 0.5s linear 0.2s, width 0.7s linear; /* Added width transition */
+  transition: transform 1s linear, opacity 0.5s linear 0.2s, width 1s linear; /* Changed to 1s linear */
   z-index: 5; /* Above 3D background, below potential popups */
   display: none; /* Initially hidden, script will manage */
 }

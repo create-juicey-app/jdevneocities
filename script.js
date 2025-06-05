@@ -85,8 +85,7 @@ window.addEventListener('load', function() {
         void consoleElement.offsetWidth; 
         consoleElement.classList.add('active');
 
-        // Wait for console animation to roughly finish before fetching and displaying log
-        // This timeout should ideally match or be slightly longer than the console's scaleY transition duration
+        // Wait for console animation to finish (1s) + 2 additional seconds before fetching and displaying log
         setTimeout(() => {
           fetch('string.txt')
             .then(response => response.text())
@@ -100,7 +99,7 @@ window.addEventListener('load', function() {
               // Still proceed to show main content even if boot log fails
               setTimeout(showMainContent, 500);
             });
-        }, 700); // Corresponds to transform 0.7s in CSS for #console.active
+        }, 3000); // 1000ms (console animation) + 2000ms (additional delay) = 3000ms total
       } else {
         // If no console, proceed to show main content directly
         showMainContent();
